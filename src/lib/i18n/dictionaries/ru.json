@@ -6528,7 +6528,7 @@
   "description.legendaryShrine.buff.4": "+1 камень",
   "description.fossilShell": "Похоже, внутри что-то есть...",
   "description.obsidianShrine": "Святилище обсидиана",
-  "description.obsidianShrine.buff": "Сажает и собирает весь урожай с грядок, удобряет разные типы грядок.",
+  "description.obsidianShrine.buff": "Сажает и собирает весь урожай с грядок, удобряет разные типы грядок, включая теплицу.",
   "obsidianShrine.harvest": "Собрать весь урожай",
   "obsidianShrine.plant": "Посадить {{seed}}",
   "obsidianShrine.readyCrops": "Урожай готов к сбору",
@@ -8786,7 +8786,7 @@
   "description.saltAwakeningBanner": "Поднимай знамя - глава «Пробуждение соли» началась.",
   "description.saltDinoEgg": "Окаменевшее яйцо из соляных равнин. Кто же его отложил?",
   "description.flamingoChicken.boost": "-2.5% времени сна кур",
-  "description.spaSheep.boost": "+5 опыта животным от инструментов для ухода",
+  "description.spaSheep.boost": "+5 опыта овцам от инструментов для ухода",
   "description.spaCow.boost": "+0.1 молоко",
   "description.deepSeaSlug.boost.2": "+1 червь с компоста",
   "referral.share": "Поделиться в:",
@@ -8806,7 +8806,7 @@
   "skillReset.ticket": "Сброс билетом",
   "skillReset.ticketDescription": "Используй Skill Reset Ticket, чтобы сбросить все навыки.",
   "obsidianShrine.fertilise": "Удобрить всё",
-  "obsidianShrine.fertiliseAll": "Применить удобрение ко всем подходящим грядкам",
+  "obsidianShrine.fertiliseAll": "Применить удобрение ко всем подходящим грядкам, включая теплицу.",
   "obsidianShrine.selectFertiliser": "Выбери удобрение",
   "obsidianShrine.noFertilisers": "Нет доступных удобрений",
   "obsidianShrine.noEligiblePlots": "Нет грядок для удобрения",
@@ -8893,5 +8893,8 @@
   "description.shrimpOnesie.boost": "+1 случайная рыба на каждом 15-м забросе",
   "description.clamShellHat": "Отполированная раковина моллюска у тебя на голове.",
   "description.shrimpOnesie": "Уютный, солёный и слегка кусачий.",
-  "vip.benefit.bonusSaltYield": "+2 соли за каждое использование граблей во время главы «Пробуждение соли»."
+  "vip.benefit.bonusSaltYield": "+2 соли за каждое использование граблей во время главы «Пробуждение соли».",
+  "statements.blacklist.discord": "Свяжись с нами в Discord через тикет.",
+  "statements.blacklist.noDiscord": "Нет Discord? Свяжись с нами здесь.",
+  "obsidianShrine.noEligiblePots": "Нет тепличных грядок для удобрения."
 }
