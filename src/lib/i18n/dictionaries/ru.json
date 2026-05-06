@@ -8896,5 +8896,8 @@
   "vip.benefit.bonusSaltYield": "+2 соли за каждое использование граблей во время главы «Пробуждение соли».",
   "statements.blacklist.discord": "Свяжись с нами в Discord через тикет.",
   "statements.blacklist.noDiscord": "Нет Discord? Свяжись с нами здесь.",
-  "obsidianShrine.noEligiblePots": "Нет тепличных грядок для удобрения."
+  "obsidianShrine.noEligiblePots": "Нет тепличных грядок для удобрения.",
+  "description.saltDoll": "Приправлен щепоткой соли и большим количеством обаяния.",
+  "description.jacuzziBear": "Нежится в солёных водах и наслаждается жизнью.",
+  "chapterCrafting": "Эксклюзивы главы"
 }
