@@ -13,6 +13,7 @@ import classNames from "classnames";
  * @param content The bottom or left content view.
  * @param mobileReversePanelOrder Whether to show the panel below the content on mobile.
  * @param matchPanelHeight On desktop, caps the content column's height to the panel column's actual rendered height (measured live), instead of a fixed max-height, so the two columns' borders line up regardless of how much either side renders.
+ * @param growToPanelHeight On desktop, lets the content column grow past its fixed max-height up to the panel column's height (measured live) when the panel is taller. Never shrinks it below the fixed max-height.
  */
 interface Props {
   divRef?: React.RefObject<HTMLDivElement | null>;
@@ -25,6 +26,7 @@ interface Props {
   content: JSX.Element;
   mobileReversePanelOrder?: boolean;
   matchPanelHeight?: boolean;
+  growToPanelHeight?: boolean;
 }
 
 /**
@@ -42,12 +44,14 @@ export const SplitScreenView: React.FC<Props> = ({
   content,
   tallDesktopContent = false,
   matchPanelHeight = false,
+  growToPanelHeight = false,
 }) => {
   const headerRef = useRef<HTMLDivElement | null>(null);
   const [panelHeight, setPanelHeight] = useState<number | undefined>(undefined);
+  const measurePanel = matchPanelHeight || growToPanelHeight;
 
   useEffect(() => {
-    if (!matchPanelHeight || !showHeader || !headerRef.current) return;
+    if (!measurePanel || !showHeader || !headerRef.current) return;
 
     const node = headerRef.current;
 
@@ -72,7 +76,17 @@ export const SplitScreenView: React.FC<Props> = ({
       observer.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [matchPanelHeight, showHeader]);
+  }, [measurePanel, showHeader]);
+
+  const getContentStyle = (): React.CSSProperties | undefined => {
+    if (!showHeader || !panelHeight) return undefined;
+    if (matchPanelHeight) return { maxHeight: `${panelHeight}px` };
+    if (growToPanelHeight) {
+      const defaultCap = tallDesktopContent ? "30rem" : "24rem";
+      return { maxHeight: `max(${defaultCap}, ${panelHeight}px)` };
+    }
+    return undefined;
+  };
 
   return (
     <div
@@ -93,11 +107,7 @@ export const SplitScreenView: React.FC<Props> = ({
           "flex-col": !contentScrollable,
           "mt-1 sm:mt-0": !mobileReversePanelOrder,
         })}
-        style={
-          matchPanelHeight && showHeader && panelHeight
-            ? { maxHeight: `${panelHeight}px` }
-            : undefined
-        }
+        style={getContentStyle()}
         divRef={divRef}
       >
         {content}
