@@ -468,6 +468,7 @@ export const TreasureShopBuy: React.FC = () => {
   return (
     <SplitScreenView
       divRef={divRef}
+      growToPanelHeight
       panel={
         isTool(selectedName) ? (
           <ToolContent selectedName={selectedName} />
