@@ -191,7 +191,7 @@ export const Codex: React.FC<Props> = ({ show, onHide }) => {
 
   return (
     // TODO feat/marks-leaderboard ADD SHOW
-    <Modal show={show} onHide={onHide} dialogClassName="md:max-w-3xl">
+    <Modal show={show} onHide={onHide} dialogClassName="md:max-w-4xl">
       <div className="h-[500px] relative">
         {/* Header */}
         <OuterPanel className="flex flex-col h-full">
