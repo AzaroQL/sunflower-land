@@ -126,7 +126,10 @@ export const SkillCategoryList: React.FC<{
 
   return (
     <>
-      <InnerPanel className="flex flex-col h-full overflow-y-auto scrollable max-h-96">
+      <InnerPanel
+        data-modal-body
+        className="flex flex-col h-full overflow-y-auto scrollable max-h-96"
+      >
         <div className="flex flex-row mt-2 mb-1 items-center">
           <Label type="default">{`${t("skillPts")} ${availableSkillPoints}`}</Label>
         </div>
@@ -140,7 +143,7 @@ export const SkillCategoryList: React.FC<{
 
           return (
             <div key={islandType} className="flex flex-col items-stretch">
-              <div className="flex items-center gap-2 mt-1 mb-2">
+              <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-2 mt-1 mb-2">
                 <Label
                   type={hasUnlockedIslandCategory ? "default" : "warning"}
                   className="capitalize"

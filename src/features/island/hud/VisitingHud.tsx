@@ -35,7 +35,6 @@ import {
 import { Feed } from "features/social/Feed";
 import { WorldFeedButton } from "features/social/components/WorldFeedButton";
 import classNames from "classnames";
-import { isMobile } from "mobile-device-detect";
 
 /**
  * `fromRoute` is wherever the player was standing when they started the visit.
@@ -153,9 +152,6 @@ export const VisitingHud: React.FC = () => {
     };
   }, []);
 
-  const showDesktopFeed = showFeed && !isMobile;
-  const hideDesktopFeed = !showFeed && !isMobile;
-
   return (
     <HudContainer>
       <Feed type="world" showFeed={showFeed} setShowFeed={setShowFeed} />
@@ -270,10 +266,7 @@ export const VisitingHud: React.FC = () => {
       <div
         className={classNames(
           "absolute bottom-0 p-2.5 left-0 flex flex-col space-y-2.5 transition-transform",
-          {
-            "translate-x-0": hideDesktopFeed,
-            "translate-x-[320px]": showDesktopFeed,
-          },
+          { "max-sm:hidden sm:translate-x-[328px]": showFeed },
         )}
       >
         <WorldFeedButton showFeed={showFeed} setShowFeed={setShowFeed} />
