@@ -20,7 +20,6 @@ import { useAppTranslation } from "lib/i18n/useAppTranslations";
 import type { GameState } from "features/game/types/game";
 import { useSelector } from "@xstate/react";
 
-const CONTENT_HEIGHT = 350;
 interface Props {
   onBack: () => void;
   onClose: () => void;
@@ -80,8 +79,8 @@ export const Achievements: React.FC<Props> = ({ onBack, readonly }) => {
       </div>
       <div className="w-full mt-2">
         <div
-          style={{ maxHeight: CONTENT_HEIGHT }}
-          className="overflow-y-auto scrollable flex flex-wrap pt-1"
+          data-modal-body
+          className="max-h-[350px] overflow-y-auto scrollable flex flex-wrap pt-1"
         >
           {getKeys(achievements)
             .filter((achievement) => {

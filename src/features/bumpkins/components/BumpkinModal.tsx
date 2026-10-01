@@ -292,13 +292,16 @@ export const BumpkinModal: React.FC<Props> = ({
     ];
   };
 
+  const BodyWrapper =
+    tab === "skills" || tab === "feed" ? React.Fragment : InnerPanel;
+
   return (
     <CloseButtonPanel
       currentTab={tab}
       setCurrentTab={setTab}
       onClose={onClose}
       tabs={renderTabs()}
-      container={tab === "skills" || tab === "feed" ? OuterPanel : undefined}
+      container={OuterPanel}
     >
       {tab === "feed" && !hasLeveledUp && (
         <InnerPanel className="flex items-center p-2 mb-1">
@@ -328,65 +331,68 @@ export const BumpkinModal: React.FC<Props> = ({
           )}
         </InnerPanel>
       )}
-      <div
-        style={{
-          maxHeight: "calc(100vh - 200px)",
-          overflowY: "auto",
-        }}
-        className="scrollable"
-      >
-        {tab === "info" && (
-          <BumpkinInfo
-            gameState={gameState}
-            setView={setView}
-            powerSkillsReady={powerSkillsReady}
-            hasPowerSkills={hasPowerSkills}
-            readonly={readonly}
-          />
-        )}
+      {/* Feed and Skills bring their own inner panels; the other tabs get the
+          one Panel used to add. Swapping the container per tab instead would
+          remount the whole panel and reset the tab bar's scroll. */}
+      <BodyWrapper>
+        <div
+          data-modal-body
+          data-tall-mobile
+          className="max-h-[calc(100vh-200px)] overflow-y-auto scrollable"
+        >
+          {tab === "info" && (
+            <BumpkinInfo
+              gameState={gameState}
+              setView={setView}
+              powerSkillsReady={powerSkillsReady}
+              hasPowerSkills={hasPowerSkills}
+              readonly={readonly}
+            />
+          )}
 
-        {tab === "equip" && (
-          <BumpkinEquip
-            equipment={bumpkin.equipped}
-            onEquip={(equipment) => {
-              gameService.send("bumpkin.equipped", {
-                equipment,
-              });
-              gameService.send("SAVE");
-            }}
-          />
-        )}
-        {tab === "skills" && <Skills readonly={readonly} />}
-        {tab === "feed" && (
-          <>
-            {hasLeveledUp ? (
-              <InnerPanel>
-                <LevelUp
-                  level={level}
-                  ascension={isAscended ? ascensionLevel : undefined}
-                  onClose={() => {
-                    if (currentBumpkinLevel === 2 && !isAscended) {
-                      onClose();
-                      openModal("SECOND_LEVEL");
-                      setTimeout(() => acknowledgeLevelUp(), 500);
-                    } else {
-                      acknowledgeLevelUp();
-                    }
-                  }}
-                  wearables={bumpkin.equipped as Equipped}
+          {tab === "equip" && (
+            <BumpkinEquip
+              equipment={bumpkin.equipped}
+              onEquip={(equipment) => {
+                gameService.send("bumpkin.equipped", {
+                  equipment,
+                });
+                gameService.send("SAVE");
+              }}
+            />
+          )}
+          {tab === "skills" && <Skills readonly={readonly} />}
+          {tab === "feed" && (
+            <>
+              {hasLeveledUp ? (
+                <InnerPanel>
+                  <LevelUp
+                    level={level}
+                    ascension={isAscended ? ascensionLevel : undefined}
+                    onClose={() => {
+                      if (currentBumpkinLevel === 2 && !isAscended) {
+                        onClose();
+                        openModal("SECOND_LEVEL");
+                        setTimeout(() => acknowledgeLevelUp(), 500);
+                      } else {
+                        acknowledgeLevelUp();
+                      }
+                    }}
+                    wearables={bumpkin.equipped as Equipped}
+                  />
+                </InnerPanel>
+              ) : (
+                <Feed
+                  food={availableFood}
+                  selectedName={selectedFoodName}
+                  setSelectedName={setSelectedFoodName}
+                  contentRef={feedContentRef}
                 />
-              </InnerPanel>
-            ) : (
-              <Feed
-                food={availableFood}
-                selectedName={selectedFoodName}
-                setSelectedName={setSelectedFoodName}
-                contentRef={feedContentRef}
-              />
-            )}
-          </>
-        )}
-      </div>
+              )}
+            </>
+          )}
+        </div>
+      </BodyWrapper>
     </CloseButtonPanel>
   );
 };

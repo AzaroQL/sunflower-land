@@ -227,14 +227,15 @@ export const BumpkinEquip: React.FC<Props> = ({
           />
         </div>
 
-        <div className="flex-1 flex max-h-[300px] sm:max-h-[306px]">
-          <OuterPanel className="w-full flex flex-col !pt-1 !pb-0 !px-1 min-h-[106px]">
+        <div className="flex-1 flex">
+          <OuterPanel className="w-full flex flex-col !pt-1 !pb-0 !px-1">
             <div className="w-full pb-1">
               <Label type="default">{`${t(
                 `equip.${selectedBumpkinPart}`,
               )}`}</Label>
             </div>
-            <div className="flex-col flex-1 overflow-y-auto scrollable justify-center items-center">
+            {/* 2 rows of 5 square cells + 12px; vw not cqw, as containment drops the min from the parent's height */}
+            <div className="flex-col flex-1 overflow-y-auto scrollable justify-center items-center max-sm:min-h-[calc((100vw-140px)*2/5+28px)]">
               {filteredWardrobeNames.length === 0 ? (
                 <div className="flex h-full justify-center items-center text-xs">
                   <p>{t("empty")}</p>

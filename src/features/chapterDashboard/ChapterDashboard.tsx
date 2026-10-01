@@ -80,7 +80,7 @@ export const ChapterDashboard: React.FC = () => {
       className="bg-[#181425] w-full h-full safe-area-inset-bottom"
       style={{ paddingTop: safeAreaPaddingTop }}
     >
-      <OuterPanel className="relative h-full pointer-events-auto flex flex-col overflow-y-auto scrollable">
+      <OuterPanel className="relative h-full pointer-events-auto flex flex-col">
         <div className="relative flex w-full justify-between pr-10 items-center mr-auto h-20 min-h-20 shrink-0 mb-2">
           <div
             className="absolute inset-0 w-full h-full -z-0 rounded-sm"
@@ -123,47 +123,49 @@ export const ChapterDashboard: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-2 pb-4">
-          <div className="block md:hidden">
-            <ChapterTimer />
-          </div>
-          <div className="flex flex-col-reverse lg:flex-row w-full lg:w-4/5 gap-x-1">
-            <div className="w-full lg:w-1/4 ">
-              <div className="hidden lg:block">
-                <ShopSection gameState={gameState} />
+        <div className="flex-1 min-h-0 overflow-y-auto scrollable">
+          <div className="flex flex-col lg:flex-row gap-2 pb-4">
+            <div className="block md:hidden">
+              <ChapterTimer />
+            </div>
+            <div className="flex flex-col-reverse lg:flex-row w-full lg:w-4/5 gap-x-1">
+              <div className="w-full lg:w-1/4 ">
+                <div className="hidden lg:block">
+                  <ShopSection gameState={gameState} />
+                </div>
+                <AuctionsSection
+                  chapter={chapter}
+                  farmId={effectiveFarmId}
+                  gameState={gameState}
+                  token={effectiveToken}
+                />
+                <RafflesSection token={effectiveToken} />
+                <MutantsSection chapter={chapter} />
               </div>
-              <AuctionsSection
-                chapter={chapter}
+
+              <div className="w-full lg:w-3/4">
+                <div className="lg:hidden block">
+                  <ShopSection gameState={gameState} />
+                </div>
+
+                <ChapterIntroSection />
+
+                <div className="hidden lg:block">
+                  <ChapterTracks />
+                </div>
+                <div className="block lg:hidden mb-1">
+                  <ChapterTracksPreview />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <LeaderboardSection
                 farmId={effectiveFarmId}
-                gameState={gameState}
                 token={effectiveToken}
               />
-              <RafflesSection token={effectiveToken} />
-              <MutantsSection chapter={chapter} />
+              <ChapterMarketplaceWidget />
             </div>
-
-            <div className="w-full lg:w-3/4">
-              <div className="lg:hidden block">
-                <ShopSection gameState={gameState} />
-              </div>
-
-              <ChapterIntroSection />
-
-              <div className="hidden lg:block">
-                <ChapterTracks />
-              </div>
-              <div className="block lg:hidden mb-1">
-                <ChapterTracksPreview />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <LeaderboardSection
-              farmId={effectiveFarmId}
-              token={effectiveToken}
-            />
-            <ChapterMarketplaceWidget />
           </div>
         </div>
       </OuterPanel>
