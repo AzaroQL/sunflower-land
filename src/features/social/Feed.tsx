@@ -23,7 +23,6 @@ import cheer from "assets/icons/cheer.webp";
 import type { MachineState } from "features/game/lib/gameMachine";
 import { Context } from "features/game/GameProvider";
 import { useSelector } from "@xstate/react";
-import { isMobile } from "mobile-device-detect";
 import { useAppTranslation } from "lib/i18n/useAppTranslations";
 import { useFeedInteractions } from "./hooks/useFeedInteractions";
 import type { AuthMachineState } from "features/auth/lib/authMachine";
@@ -133,7 +132,6 @@ export const Feed: React.FC<Props> = ({
   const { authService } = useContext(AuthProvider.Context);
 
   const [showFollowing, setShowFollowing] = useState(false);
-  const feedRef = useRef<HTMLDivElement>(null);
   const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(getFilter());
   const [searchResults, setSearchResults] = useState<Detail[]>([]);
   const [showPickServer, setShowPickServer] = useState(false);
@@ -163,27 +161,6 @@ export const Feed: React.FC<Props> = ({
     mutate,
   } = useFeedInteractions(token, farmId, selectedFilter, type === "world");
   const { setUnreadCount, lastAcknowledged, clearUnread } = useFeed();
-
-  // Handle clicks outside the feed to close it
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showFeed &&
-        feedRef.current &&
-        !feedRef.current.contains(event.target as Node)
-      ) {
-        handleCloseFeed();
-      }
-    };
-
-    if (showFeed) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showFeed]);
 
   // Find number of unread and set unread count when the feed loads
   useEffect(() => {
@@ -300,185 +277,196 @@ export const Feed: React.FC<Props> = ({
     setShowPickServer(true);
   };
 
-  const showMobileFeed = showFeed && isMobile;
-  const showDesktopFeed = showFeed && !isMobile;
-  const hideMobileFeed = !showFeed && isMobile;
-  const hideDesktopFeed = !showFeed && !isMobile;
-
   return (
-    <InnerPanel
-      className={classNames(
-        `fixed ${isMobile ? "w-[75%]" : "w-[320px]"} inset-safe-area m-2 z-30 transition-transform duration-200`,
-        {
-          "translate-x-0": showDesktopFeed || showMobileFeed,
-          "-translate-x-[330px]": hideDesktopFeed,
-          // Account for the margin
-          "-translate-x-[110%]": hideMobileFeed,
-        },
+    <>
+      {/* Catches the first click outside the feed so it only closes the feed,
+          instead of also pressing whatever HUD button or game object is under it */}
+      {showFeed && (
+        <div
+          className="fixed inset-0 z-[29]"
+          onClick={handleCloseFeed}
+          // Prevent click through to Phaser
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        />
       )}
-      divRef={feedRef}
-    >
-      <Modal show={showPickServer} onHide={() => setShowPickServer(false)}>
-        <CloseButtonPanel
-          title={t("gameOptions.plazaSettings.pickServer")}
-          onClose={() => setShowPickServer(false)}
-        >
-          <PickServer onClose={() => setShowPickServer(false)} />
-        </CloseButtonPanel>
-      </Modal>
-      <div className="flex flex-col gap-2 h-full w-full">
-        <div className="sticky top-0 flex flex-col z-10 bg-[#e4a672]">
-          <div className="flex items-center gap-2 pb-1">
-            <div className="flex items-center w-full min-w-0 gap-2">
-              {showFollowing && (
+      <InnerPanel
+        className={classNames(
+          "fixed w-[85%] sm:w-[328px] inset-safe-area m-2 z-30 transition-transform duration-200",
+          {
+            "translate-x-0": showFeed,
+            // 110% of its own width clears the m-2 margin too
+            "-translate-x-[110%]": !showFeed,
+          },
+        )}
+      >
+        <Modal show={showPickServer} onHide={() => setShowPickServer(false)}>
+          <CloseButtonPanel
+            title={t("gameOptions.plazaSettings.pickServer")}
+            onClose={() => setShowPickServer(false)}
+          >
+            <PickServer onClose={() => setShowPickServer(false)} />
+          </CloseButtonPanel>
+        </Modal>
+        <div className="flex flex-col gap-2 h-full w-full">
+          <div className="sticky top-0 flex flex-col z-10 bg-[#e4a672]">
+            <div className="flex items-center gap-2 pb-1">
+              <div className="flex items-center w-full min-w-0 gap-2">
+                {showFollowing && (
+                  <img
+                    src={SUNNYSIDE.icons.arrow_left}
+                    className="w-6"
+                    alt="Back"
+                    onClick={() => setShowFollowing(false)}
+                  />
+                )}
+                <Label type="default">{t("feed")}</Label>
+                <Label type="default" icon={SUNNYSIDE.icons.drag}>
+                  {`${helpRemaining ?? "--"}/${helpLimit}`}
+                </Label>
+                <Label type="default" icon={cheer}>
+                  {cheersAvailable.toNumber()}
+                </Label>
+                {serverLabel && (
+                  <button
+                    type="button"
+                    className="min-w-0 max-w-[56px] shrink cursor-pointer truncate bg-transparent p-0 text-left text-xxs hover:underline"
+                    title={serverLabel}
+                    onClick={handleServerLabelClick}
+                  >
+                    {serverLabel}
+                  </button>
+                )}
+              </div>
+              <img
+                src={SUNNYSIDE.icons.close}
+                className="cursor-pointer"
+                alt="Close"
+                style={{
+                  width: `${PIXEL_SCALE * 9}px`,
+                  height: `${PIXEL_SCALE * 9}px`,
+                }}
+                onClick={handleCloseFeed}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-1 w-full mb-2">
+              <div
+                className="flex ml-1.5 items-center gap-1 text-xs underline cursor-pointer"
+                onClick={() => {
+                  setShowFollowing(false);
+                  setShowFeed(false);
+                  playerModalManager.open({
+                    farmId,
+                  });
+                }}
+              >
                 <img
-                  src={SUNNYSIDE.icons.arrow_left}
-                  className="w-6"
-                  alt="Back"
-                  onClick={() => setShowFollowing(false)}
+                  src={SUNNYSIDE.icons.player_small}
+                  className="w-4 mt-1 whitespace-nowrap"
                 />
-              )}
-              <Label type="default">{t("feed")}</Label>
-              <Label type="default" icon={SUNNYSIDE.icons.drag}>
-                {`${helpRemaining ?? "--"}/${helpLimit}`}
-              </Label>
-              <Label type="default" icon={cheer}>
-                {cheersAvailable.toNumber()}
-              </Label>
-              {serverLabel && (
-                <button
-                  type="button"
-                  className="min-w-0 max-w-[56px] shrink cursor-pointer truncate bg-transparent p-0 text-left text-xxs hover:underline"
-                  title={serverLabel}
-                  onClick={handleServerLabelClick}
-                >
-                  {serverLabel}
-                </button>
-              )}
-            </div>
-            <img
-              src={SUNNYSIDE.icons.close}
-              className="cursor-pointer"
-              alt="Close"
-              style={{
-                width: `${PIXEL_SCALE * 9}px`,
-                height: `${PIXEL_SCALE * 9}px`,
-              }}
-              onClick={handleCloseFeed}
-            />
-          </div>
-          <div className="flex items-center justify-between gap-1 w-full mb-2">
-            <div
-              className="flex ml-1.5 items-center gap-1 text-xs underline cursor-pointer"
-              onClick={() => {
-                setShowFollowing(false);
-                setShowFeed(false);
-                playerModalManager.open({
-                  farmId,
-                });
-              }}
-            >
-              <img
-                src={SUNNYSIDE.icons.player_small}
-                className="w-4 mt-1 whitespace-nowrap"
+                {t("myProfile")}
+              </div>
+              <FollowsIndicator
+                showSingleBumpkin
+                count={following.length}
+                onClick={() => setShowFollowing(!showFollowing)}
+                type="following"
+                className="ml-1 -mr-3.5"
               />
-              {t("myProfile")}
             </div>
-            <FollowsIndicator
-              showSingleBumpkin
-              count={following.length}
-              onClick={() => setShowFollowing(!showFollowing)}
-              type="following"
-              className="ml-1 -mr-3.5"
+            <div className="flex items-center justify-between gap-1 w-full">
+              <div
+                className="flex ml-1.5 items-center gap-1 text-xs underline cursor-pointer"
+                onClick={() => {
+                  setShowFollowing(false);
+                  setShowFeed(false);
+                  discoveryModalManager.open("leaderboard");
+                }}
+              >
+                <img
+                  src={socialPointsIcon}
+                  className="w-4 mt-1 whitespace-nowrap"
+                />
+                {t("leaderboard")}
+              </div>
+              <div
+                className="flex ml-1.5 mr-1 items-center gap-1 text-xs underline cursor-pointer whitespace-nowrap"
+                onClick={() => {
+                  setShowFollowing(false);
+                  setShowFeed(false);
+                  discoveryModalManager.open("search");
+                }}
+              >
+                {t("playerSearch.searchPlayer")}
+                <img src={SUNNYSIDE.icons.search} className="w-4" />
+              </div>
+            </div>
+          </div>
+          {!showFollowing && (
+            <FeedFilters
+              options={[
+                { value: "all", label: "All" },
+                {
+                  value: "help",
+                  label: "Helped",
+                },
+                { value: "chat", label: "Chat" },
+                {
+                  value: "cheer",
+                  label: "Cheered",
+                },
+                { value: "follow", label: "Follows" },
+              ]}
+              value={selectedFilter}
+              onChange={(value) => setSelectedFilter(value)}
             />
-          </div>
-          <div className="flex items-center justify-between gap-1 w-full">
-            <div
-              className="flex ml-1.5 items-center gap-1 text-xs underline cursor-pointer"
-              onClick={() => {
-                setShowFollowing(false);
-                setShowFeed(false);
-                discoveryModalManager.open("leaderboard");
-              }}
-            >
-              <img
-                src={socialPointsIcon}
-                className="w-4 mt-1 whitespace-nowrap"
+          )}
+
+          {showFollowing && (
+            <>
+              <SearchBar
+                context="following"
+                onSearchResults={setSearchResults}
               />
-              {t("leaderboard")}
-            </div>
-            <div
-              className="flex ml-1.5 mr-1 items-center gap-1 text-xs underline cursor-pointer whitespace-nowrap"
-              onClick={() => {
-                setShowFollowing(false);
-                setShowFeed(false);
-                discoveryModalManager.open("search");
-              }}
-            >
-              {t("playerSearch.searchPlayer")}
-              <img src={SUNNYSIDE.icons.search} className="w-4" />
-            </div>
-          </div>
+              <div
+                ref={scrollContainerRef}
+                className="flex flex-col gap-2 overflow-hidden overflow-y-auto scrollable"
+              >
+                <FollowList
+                  loggedInFarmId={farmId}
+                  token={token}
+                  searchResults={searchResults}
+                  networkFarmId={farmId}
+                  networkList={following}
+                  networkCount={following.length}
+                  showLabel={false}
+                  networkType="following"
+                  scrollContainerRef={scrollContainerRef}
+                  navigateToPlayer={handleFollowingClick}
+                />
+              </div>
+            </>
+          )}
+
+          {!showFollowing && (
+            <FeedContent
+              feed={feed}
+              following={following ?? []}
+              username={username ?? `#${farmId}`}
+              isLoadingInitialData={isLoadingInitialData}
+              isLoadingMore={isLoadingMore}
+              onFollowClick={handleFollowClick}
+              hasMore={hasMore}
+              loadMore={loadMore}
+              onInteractionClick={handleInteractionClick}
+              filter={selectedFilter}
+            />
+          )}
         </div>
-        {!showFollowing && (
-          <FeedFilters
-            options={[
-              { value: "all", label: "All" },
-              {
-                value: "help",
-                label: "Helped",
-              },
-              { value: "chat", label: "Chat" },
-              {
-                value: "cheer",
-                label: "Cheered",
-              },
-              { value: "follow", label: "Follows" },
-            ]}
-            value={selectedFilter}
-            onChange={(value) => setSelectedFilter(value)}
-          />
-        )}
-
-        {showFollowing && (
-          <>
-            <SearchBar context="following" onSearchResults={setSearchResults} />
-            <div
-              ref={scrollContainerRef}
-              className="flex flex-col gap-2 overflow-hidden overflow-y-auto scrollable"
-            >
-              <FollowList
-                loggedInFarmId={farmId}
-                token={token}
-                searchResults={searchResults}
-                networkFarmId={farmId}
-                networkList={following}
-                networkCount={following.length}
-                showLabel={false}
-                networkType="following"
-                scrollContainerRef={scrollContainerRef}
-                navigateToPlayer={handleFollowingClick}
-              />
-            </div>
-          </>
-        )}
-
-        {!showFollowing && (
-          <FeedContent
-            feed={feed}
-            following={following ?? []}
-            username={username ?? `#${farmId}`}
-            isLoadingInitialData={isLoadingInitialData}
-            isLoadingMore={isLoadingMore}
-            onFollowClick={handleFollowClick}
-            hasMore={hasMore}
-            loadMore={loadMore}
-            onInteractionClick={handleInteractionClick}
-            filter={selectedFilter}
-          />
-        )}
-      </div>
-    </InnerPanel>
+      </InnerPanel>
+    </>
   );
 };
 

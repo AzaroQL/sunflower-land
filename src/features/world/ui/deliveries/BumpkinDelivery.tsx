@@ -590,57 +590,59 @@ export const Gifts: React.FC<{
           )}
         </div>
 
-        {flowers.length === 0 && (
-          <p className="text-xs mb-2">{`${t("bumpkin.delivery.noFlowers")}`}</p>
-        )}
-        {flowers.length > 0 && (
-          <>
-            {recentOwnedFlowers.length > 0 && (
-              <>
-                <Label
-                  type="default"
-                  className="mb-1 ml-1"
-                  icon={SUNNYSIDE.icons.stopwatch}
-                >
-                  {t("bumpkin.delivery.recentlyGifted")}
-                </Label>
-                <div className="flex w-full flex-wrap mb-2">
-                  {recentOwnedFlowers.map((flower) => (
-                    <Box
-                      key={flower}
-                      onClick={() => onFlowerClick(flower)}
-                      image={ITEM_DETAILS[flower].image}
-                      secondaryImage={
-                        BUMPKIN_FLOWER_BONUSES[name]?.[flower]
-                          ? lightning
-                          : undefined
-                      }
-                      isSelected={selected === flower}
-                      count={game.inventory[flower]}
-                    />
-                  ))}
-                </div>
-                <div className="border-t border-brown-600 mb-2 w-full" />
-              </>
-            )}
-            <div className="flex w-full flex-wrap mb-2">
-              {otherFlowers.map((flower) => (
-                <Box
-                  key={flower}
-                  onClick={() => onFlowerClick(flower)}
-                  image={ITEM_DETAILS[flower].image}
-                  secondaryImage={
-                    BUMPKIN_FLOWER_BONUSES[name]?.[flower]
-                      ? lightning
-                      : undefined
-                  }
-                  isSelected={selected === flower}
-                  count={game.inventory[flower]}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        <div data-modal-body className="overflow-y-auto scrollable">
+          {flowers.length === 0 && (
+            <p className="text-xs mb-2">{`${t("bumpkin.delivery.noFlowers")}`}</p>
+          )}
+          {flowers.length > 0 && (
+            <>
+              {recentOwnedFlowers.length > 0 && (
+                <>
+                  <Label
+                    type="default"
+                    className="mb-1 ml-1"
+                    icon={SUNNYSIDE.icons.stopwatch}
+                  >
+                    {t("bumpkin.delivery.recentlyGifted")}
+                  </Label>
+                  <div className="flex w-full flex-wrap mb-2">
+                    {recentOwnedFlowers.map((flower) => (
+                      <Box
+                        key={flower}
+                        onClick={() => onFlowerClick(flower)}
+                        image={ITEM_DETAILS[flower].image}
+                        secondaryImage={
+                          BUMPKIN_FLOWER_BONUSES[name]?.[flower]
+                            ? lightning
+                            : undefined
+                        }
+                        isSelected={selected === flower}
+                        count={game.inventory[flower]}
+                      />
+                    ))}
+                  </div>
+                  <div className="border-t border-brown-600 mb-2 w-full" />
+                </>
+              )}
+              <div className="flex w-full flex-wrap mb-2">
+                {otherFlowers.map((flower) => (
+                  <Box
+                    key={flower}
+                    onClick={() => onFlowerClick(flower)}
+                    image={ITEM_DETAILS[flower].image}
+                    secondaryImage={
+                      BUMPKIN_FLOWER_BONUSES[name]?.[flower]
+                        ? lightning
+                        : undefined
+                    }
+                    isSelected={selected === flower}
+                    count={game.inventory[flower]}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </InnerPanel>
 
       <div className="flex">

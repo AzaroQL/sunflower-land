@@ -81,11 +81,12 @@ export const CloseButtonPanel = <T extends string>({
   return (
     <Container
       className={classNames(
-        "relative max-h-[90vh] overflow-y-auto overflow-x-hidden scrollable",
+        "relative overflow-y-auto overflow-x-hidden scrollable",
         className,
       )}
       bumpkinParts={bumpkinParts}
       hasTabs={!!tabs}
+      data-modal-panel
     >
       {/* Tabs */}
       {tabs && (

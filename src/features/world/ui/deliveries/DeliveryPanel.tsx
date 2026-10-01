@@ -13,8 +13,12 @@ interface Props {
 export const DeliveryPanel: React.FC<Props> = ({ npc, className, onClose }) => {
   return (
     <OuterPanel
-      className={classNames("relative w-full", className)}
+      className={classNames(
+        "relative w-full overflow-y-auto overflow-x-hidden scrollable",
+        className,
+      )}
       bumpkinParts={NPC_WEARABLES[npc]}
+      data-modal-panel
     >
       <DeliveryPanelContent npc={npc} onClose={onClose} />
     </OuterPanel>

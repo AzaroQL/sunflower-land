@@ -30,12 +30,7 @@ export const Skills: React.FC<Props> = ({ readonly }) => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "200px",
-        maxHeight: "calc(100vh - 200px)",
-      }}
-    >
+    <div className="min-h-[200px] max-h-[calc(100vh-200px)]">
       {!selectedSkillPath && (
         <SkillCategoryList
           onClick={(category) => onSkillCategoryClickHandler(category)}
