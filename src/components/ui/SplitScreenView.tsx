@@ -2,10 +2,15 @@ import React, { type JSX, useEffect, useRef, useState } from "react";
 import { InnerPanel } from "components/ui/Panel";
 import classNames from "classnames";
 
+// Mobile and short screens size the split view through the modal height rules
+// in styles.css; the measured caps below only apply outside them. Mirrors the
+// breakpoints of those rules - keep the two in sync.
+const DESKTOP_QUERY = "(min-width: 640px) and (min-height: 500px)";
+
 /**
  * The props for the component.
  * @param divRef The parent div reference. It is used to link up the parentDivRef prop of the <Box/> component.
- * @param tallMobileContent true if the content is taller for small screen views, else false. Usually set to true if the parent panel has no bumpkin parts. Defaults to false.
+ * @param tallMobileContent On mobile and short screens, sizes the whole modal to its maximum height even when the content is short. Without it the modal is only capped at that height, so short content keeps it small. Defaults to false.
  * @param wideModal true if the panel modal is using a wider variant, else false. Defaults to false.
  * @param showPanel Whether to show the top or right panel view or not.
  * @param contentScrollable Whether the content view is scrollable or not.
@@ -56,9 +61,7 @@ export const SplitScreenView: React.FC<Props> = ({
     const node = headerRef.current;
 
     const measure = () => {
-      // Only constrain on desktop (sm+); mobile stacks the panels, where the
-      // fixed tallMobileContent/max-h caps below already apply.
-      if (window.innerWidth >= 640) {
+      if (window.matchMedia(DESKTOP_QUERY).matches) {
         setPanelHeight(node.offsetHeight);
       } else {
         setPanelHeight(undefined);
@@ -90,17 +93,15 @@ export const SplitScreenView: React.FC<Props> = ({
 
   return (
     <div
-      className={classNames("flex sm:flex-row", {
-        "flex-col": mobileReversePanelOrder,
-        "flex-col-reverse": !mobileReversePanelOrder,
-      })}
+      data-modal-body
+      data-tall-mobile={tallMobileContent || undefined}
+      className="flex flex-col sm:flex-row"
     >
       <InnerPanel
-        className={classNames("w-full sm:w-3/5 h-fit p-1 flex", {
+        data-split-content
+        className={classNames("w-full sm:w-3/5 h-fit p-1 flex content-start", {
           "sm:max-h-96": !tallDesktopContent,
           "sm:max-h-[30rem]": tallDesktopContent,
-          "max-h-80": tallMobileContent,
-          "max-h-56": !tallMobileContent,
           "lg:w-3/4": wideModal,
           "flex-wrap overflow-y-auto scrollable overflow-x-hidden sm:mr-1":
             contentScrollable,
@@ -114,9 +115,13 @@ export const SplitScreenView: React.FC<Props> = ({
       </InnerPanel>
       {showHeader && (
         <InnerPanel
-          className={classNames("w-full sm:w-2/5 h-fit", {
+          data-split-panel
+          className={classNames("w-full sm:w-2/5 h-fit scrollable", {
             "lg:w-1/4": wideModal,
             "mt-1 sm:mt-0": mobileReversePanelOrder,
+            // order rather than flex-col-reverse: a reversed column overflows
+            // upwards, where the clipped top of a tall panel can't be scrolled to
+            "max-sm:order-first": !mobileReversePanelOrder,
           })}
           divRef={headerRef}
         >

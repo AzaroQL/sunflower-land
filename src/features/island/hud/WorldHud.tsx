@@ -28,7 +28,6 @@ import { CommunityGameCountdown } from "features/giveaway/ui/CommunityGameCountd
 import { HudBumpkin } from "./components/bumpkinProfile/HudBumpkin";
 import classNames from "classnames";
 import { Feed } from "features/social/Feed";
-import { isMobile } from "mobile-device-detect";
 import { WorldFeedButton } from "features/social/components/WorldFeedButton";
 import type { MachineState } from "features/game/lib/gameMachine";
 import { DesertDiggingDisplay } from "./components/DesertDiggingDisplay";
@@ -81,9 +80,6 @@ const HudComponent: React.FC<Props> = ({ server, scene }) => {
     gameService.send("DEPOSIT", args);
   };
 
-  const showDesktopFeed = showFeed && !isMobile;
-  const hideDesktopFeed = !showFeed && !isMobile;
-
   return (
     <>
       <Feed
@@ -96,10 +92,7 @@ const HudComponent: React.FC<Props> = ({ server, scene }) => {
         <div
           className={classNames(
             "absolute left-0 top-0 bottom-0 p-2.5 transition-transform duration-200",
-            {
-              "translate-x-0": hideDesktopFeed,
-              "translate-x-[320px]": showDesktopFeed,
-            },
+            { "max-sm:hidden sm:translate-x-[328px]": showFeed },
           )}
         >
           <HudBumpkin isTutorial={isTutorial} />
@@ -109,10 +102,7 @@ const HudComponent: React.FC<Props> = ({ server, scene }) => {
         <div
           className={classNames(
             "absolute bottom-0 p-2.5 left-0 flex flex-col space-y-2.5 transition-transform",
-            {
-              "translate-x-0": hideDesktopFeed,
-              "translate-x-[320px]": showDesktopFeed,
-            },
+            { "max-sm:hidden sm:translate-x-[328px]": showFeed },
           )}
         >
           <WorldFeedButton showFeed={showFeed} setShowFeed={setShowFeed} />
@@ -125,10 +115,7 @@ const HudComponent: React.FC<Props> = ({ server, scene }) => {
         <div
           className={classNames(
             "absolute bottom-0 pb-2 pl-3 left-16 flex flex-col space-y-2.5 transition-transform",
-            {
-              "translate-x-0": hideDesktopFeed,
-              "translate-x-[320px]": showDesktopFeed,
-            },
+            { "max-sm:hidden sm:translate-x-[328px]": showFeed },
           )}
         >
           <TransactionCountdown />

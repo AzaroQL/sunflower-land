@@ -251,10 +251,10 @@ export const CommunityFeed: React.FC<Props> = ({ onAddPost, onRemoved }) => {
 
   return (
     <InnerPanel>
-      <div className="flex items-center justify-between p-1">
+      <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between p-1">
         <Label type="default">{t("community.feed.heading")}</Label>
         {isAdmin && (
-          <Button className="w-auto px-3" onClick={onAddPost}>
+          <Button className="w-full sm:w-auto px-3" onClick={onAddPost}>
             {t("community.feed.addPost")}
           </Button>
         )}

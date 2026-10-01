@@ -24,6 +24,25 @@ export interface PanelProps extends React.HTMLAttributes<HTMLDivElement> {
   bumpkinParts?: Partial<Equipped>;
 }
 
+// --bumpkin-head-offset lets the modal height rules in styles.css move the
+// head down together with the panel it sits on
+const BumpkinHead: React.FC<{ bumpkinParts: Partial<Equipped> }> = ({
+  bumpkinParts,
+}) => (
+  <div
+    data-bumpkin-head
+    className="absolute pointer-events-none"
+    style={{
+      zIndex: -10,
+      top: `calc(var(--bumpkin-head-offset, 0px) - ${PIXEL_SCALE * 61}px)`,
+      left: `${PIXEL_SCALE * -8}px`,
+      width: `${PIXEL_SCALE * 100}px`,
+    }}
+  >
+    <DynamicNFT bumpkinParts={bumpkinParts} />
+  </div>
+);
+
 /**
  * Default panel has the double layered pixel effect
  */
@@ -35,19 +54,7 @@ export const Panel: React.FC<React.PropsWithChildren<PanelProps>> = ({
 }) => {
   return (
     <>
-      {bumpkinParts && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            zIndex: -10,
-            top: `${PIXEL_SCALE * -61}px`,
-            left: `${PIXEL_SCALE * -8}px`,
-            width: `${PIXEL_SCALE * 100}px`,
-          }}
-        >
-          <DynamicNFT bumpkinParts={bumpkinParts} />
-        </div>
-      )}
+      {bumpkinParts && <BumpkinHead bumpkinParts={bumpkinParts} />}
       <OuterPanel hasTabs={hasTabs} {...divProps}>
         <InnerPanel>{children}</InnerPanel>
       </OuterPanel>
@@ -129,19 +136,7 @@ export const OuterPanel: React.FC<React.PropsWithChildren<PanelProps>> = ({
   const { isDarkMode } = useIsDarkMode();
   return (
     <>
-      {bumpkinParts && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            zIndex: -10,
-            top: `${PIXEL_SCALE * -61}px`,
-            left: `${PIXEL_SCALE * -8}px`,
-            width: `${PIXEL_SCALE * 100}px`,
-          }}
-        >
-          <DynamicNFT bumpkinParts={bumpkinParts} />
-        </div>
-      )}
+      {bumpkinParts && <BumpkinHead bumpkinParts={bumpkinParts} />}
       <div
         // Fix for dark mode
 
